@@ -13,6 +13,8 @@ Method | HTTP request | Description
 [**resubmit_workflow**](WorkflowServiceApi.md#resubmit_workflow) | **PUT** /api/v1/workflows/{namespace}/{name}/resubmit | 
 [**resume_workflow**](WorkflowServiceApi.md#resume_workflow) | **PUT** /api/v1/workflows/{namespace}/{name}/resume | 
 [**retry_workflow**](WorkflowServiceApi.md#retry_workflow) | **PUT** /api/v1/workflows/{namespace}/{name}/retry | 
+[**stop_workflow**](WorkflowServiceApi.md#stop_workflow) | **PUT** /api/v1/workflows/{namespace}/{name}/stop | 
+[**submit_workflow**](WorkflowServiceApi.md#submit_workflow) | **POST** /api/v1/workflows/{namespace}/submit | 
 [**suspend_workflow**](WorkflowServiceApi.md#suspend_workflow) | **PUT** /api/v1/workflows/{namespace}/{name}/suspend | 
 [**terminate_workflow**](WorkflowServiceApi.md#terminate_workflow) | **PUT** /api/v1/workflows/{namespace}/{name}/terminate | 
 [**watch_workflows**](WorkflowServiceApi.md#watch_workflows) | **GET** /api/v1/workflow-events/{namespace} | 
@@ -125,7 +127,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_workflow**
-> V1alpha1Workflow get_workflow(namespace, name, get_options_resource_version=get_options_resource_version)
+> V1alpha1Workflow get_workflow(namespace, name, get_options_resource_version=get_options_resource_version, fields=fields)
 
 
 
@@ -142,9 +144,10 @@ api_instance = workflows.client.WorkflowServiceApi()
 namespace = 'namespace_example' # str | 
 name = 'name_example' # str | 
 get_options_resource_version = 'get_options_resource_version_example' # str | When specified: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv. (optional)
+fields = 'fields_example' # str | Fields to be included or excluded in the response. e.g. \"spec,status.phase\", \"-status.nodes\". (optional)
 
 try:
-    api_response = api_instance.get_workflow(namespace, name, get_options_resource_version=get_options_resource_version)
+    api_response = api_instance.get_workflow(namespace, name, get_options_resource_version=get_options_resource_version, fields=fields)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling WorkflowServiceApi->get_workflow: %s\n" % e)
@@ -157,6 +160,7 @@ Name | Type | Description  | Notes
  **namespace** | **str**|  | 
  **name** | **str**|  | 
  **get_options_resource_version** | **str**| When specified: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it&#39;s 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv. | [optional] 
+ **fields** | **str**| Fields to be included or excluded in the response. e.g. \&quot;spec,status.phase\&quot;, \&quot;-status.nodes\&quot;. | [optional] 
 
 ### Return type
 
@@ -221,7 +225,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **list_workflows**
-> V1alpha1WorkflowList list_workflows(namespace, list_options_label_selector=list_options_label_selector, list_options_field_selector=list_options_field_selector, list_options_watch=list_options_watch, list_options_allow_watch_bookmarks=list_options_allow_watch_bookmarks, list_options_resource_version=list_options_resource_version, list_options_timeout_seconds=list_options_timeout_seconds, list_options_limit=list_options_limit, list_options_continue=list_options_continue)
+> V1alpha1WorkflowList list_workflows(namespace, list_options_label_selector=list_options_label_selector, list_options_field_selector=list_options_field_selector, list_options_watch=list_options_watch, list_options_allow_watch_bookmarks=list_options_allow_watch_bookmarks, list_options_resource_version=list_options_resource_version, list_options_timeout_seconds=list_options_timeout_seconds, list_options_limit=list_options_limit, list_options_continue=list_options_continue, fields=fields)
 
 
 
@@ -244,9 +248,10 @@ list_options_resource_version = 'list_options_resource_version_example' # str | 
 list_options_timeout_seconds = 'list_options_timeout_seconds_example' # str | Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity. +optional. (optional)
 list_options_limit = 'list_options_limit_example' # str | limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.  The server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned. (optional)
 list_options_continue = 'list_options_continue_example' # str | The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server, the server will respond with a 410 ResourceExpired error together with a continue token. If the client needs a consistent list, it must restart their list without the continue field. Otherwise, the client may send another list request with the token received with the 410 error, the server will respond with a list starting from the next key, but from the latest snapshot, which is inconsistent from the previous list results - objects that are created, modified, or deleted after the first list request will be included in the response, as long as their keys are after the \"next key\".  This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications. (optional)
+fields = 'fields_example' # str | Fields to be included or excluded in the response. e.g. \"items.spec,items.status.phase\", \"-items.status.nodes\". (optional)
 
 try:
-    api_response = api_instance.list_workflows(namespace, list_options_label_selector=list_options_label_selector, list_options_field_selector=list_options_field_selector, list_options_watch=list_options_watch, list_options_allow_watch_bookmarks=list_options_allow_watch_bookmarks, list_options_resource_version=list_options_resource_version, list_options_timeout_seconds=list_options_timeout_seconds, list_options_limit=list_options_limit, list_options_continue=list_options_continue)
+    api_response = api_instance.list_workflows(namespace, list_options_label_selector=list_options_label_selector, list_options_field_selector=list_options_field_selector, list_options_watch=list_options_watch, list_options_allow_watch_bookmarks=list_options_allow_watch_bookmarks, list_options_resource_version=list_options_resource_version, list_options_timeout_seconds=list_options_timeout_seconds, list_options_limit=list_options_limit, list_options_continue=list_options_continue, fields=fields)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling WorkflowServiceApi->list_workflows: %s\n" % e)
@@ -265,6 +270,7 @@ Name | Type | Description  | Notes
  **list_options_timeout_seconds** | **str**| Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity. +optional. | [optional] 
  **list_options_limit** | **str**| limit is a maximum number of responses to return for a list call. If more items exist, the server will set the &#x60;continue&#x60; field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.  The server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned. | [optional] 
  **list_options_continue** | **str**| The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server, the server will respond with a 410 ResourceExpired error together with a continue token. If the client needs a consistent list, it must restart their list without the continue field. Otherwise, the client may send another list request with the token received with the 410 error, the server will respond with a list starting from the next key, but from the latest snapshot, which is inconsistent from the previous list results - objects that are created, modified, or deleted after the first list request will be included in the response, as long as their keys are after the \&quot;next key\&quot;.  This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications. | [optional] 
+ **fields** | **str**| Fields to be included or excluded in the response. e.g. \&quot;items.spec,items.status.phase\&quot;, \&quot;-items.status.nodes\&quot;. | [optional] 
 
 ### Return type
 
@@ -282,7 +288,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **pod_logs**
-> XStreamDefinitionsv1alpha1LogEntry pod_logs(namespace, name, pod_name, log_options_container=log_options_container, log_options_follow=log_options_follow, log_options_previous=log_options_previous, log_options_since_seconds=log_options_since_seconds, log_options_since_time_seconds=log_options_since_time_seconds, log_options_since_time_nanos=log_options_since_time_nanos, log_options_timestamps=log_options_timestamps, log_options_tail_lines=log_options_tail_lines, log_options_limit_bytes=log_options_limit_bytes)
+> StreamResultOfIoArgoprojWorkflowV1alpha1LogEntry pod_logs(namespace, name, pod_name, log_options_container=log_options_container, log_options_follow=log_options_follow, log_options_previous=log_options_previous, log_options_since_seconds=log_options_since_seconds, log_options_since_time_seconds=log_options_since_time_seconds, log_options_since_time_nanos=log_options_since_time_nanos, log_options_timestamps=log_options_timestamps, log_options_tail_lines=log_options_tail_lines, log_options_limit_bytes=log_options_limit_bytes)
 
 
 
@@ -335,7 +341,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**XStreamDefinitionsv1alpha1LogEntry**](XStreamDefinitionsv1alpha1LogEntry.md)
+[**StreamResultOfIoArgoprojWorkflowV1alpha1LogEntry**](StreamResultOfIoArgoprojWorkflowV1alpha1LogEntry.md)
 
 ### Authorization
 
@@ -495,6 +501,102 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **stop_workflow**
+> V1alpha1Workflow stop_workflow(namespace, name, body)
+
+
+
+### Example
+```python
+from __future__ import print_function
+import time
+import workflows.client
+from workflows.client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = workflows.client.WorkflowServiceApi()
+namespace = 'namespace_example' # str | 
+name = 'name_example' # str | 
+body = workflows.client.V1alpha1WorkflowStopRequest() # V1alpha1WorkflowStopRequest | 
+
+try:
+    api_response = api_instance.stop_workflow(namespace, name, body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling WorkflowServiceApi->stop_workflow: %s\n" % e)
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **namespace** | **str**|  | 
+ **name** | **str**|  | 
+ **body** | [**V1alpha1WorkflowStopRequest**](V1alpha1WorkflowStopRequest.md)|  | 
+
+### Return type
+
+[**V1alpha1Workflow**](V1alpha1Workflow.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **submit_workflow**
+> V1alpha1Workflow submit_workflow(namespace, body)
+
+
+
+### Example
+```python
+from __future__ import print_function
+import time
+import workflows.client
+from workflows.client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = workflows.client.WorkflowServiceApi()
+namespace = 'namespace_example' # str | 
+body = workflows.client.V1alpha1WorkflowSubmitRequest() # V1alpha1WorkflowSubmitRequest | 
+
+try:
+    api_response = api_instance.submit_workflow(namespace, body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling WorkflowServiceApi->submit_workflow: %s\n" % e)
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **namespace** | **str**|  | 
+ **body** | [**V1alpha1WorkflowSubmitRequest**](V1alpha1WorkflowSubmitRequest.md)|  | 
+
+### Return type
+
+[**V1alpha1Workflow**](V1alpha1Workflow.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **suspend_workflow**
 > V1alpha1Workflow suspend_workflow(namespace, name, body)
 
@@ -594,7 +696,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **watch_workflows**
-> XStreamDefinitionsv1alpha1WorkflowWatchEvent watch_workflows(namespace, list_options_label_selector=list_options_label_selector, list_options_field_selector=list_options_field_selector, list_options_watch=list_options_watch, list_options_allow_watch_bookmarks=list_options_allow_watch_bookmarks, list_options_resource_version=list_options_resource_version, list_options_timeout_seconds=list_options_timeout_seconds, list_options_limit=list_options_limit, list_options_continue=list_options_continue)
+> StreamResultOfIoArgoprojWorkflowV1alpha1WorkflowWatchEvent watch_workflows(namespace, list_options_label_selector=list_options_label_selector, list_options_field_selector=list_options_field_selector, list_options_watch=list_options_watch, list_options_allow_watch_bookmarks=list_options_allow_watch_bookmarks, list_options_resource_version=list_options_resource_version, list_options_timeout_seconds=list_options_timeout_seconds, list_options_limit=list_options_limit, list_options_continue=list_options_continue)
 
 
 
@@ -641,7 +743,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**XStreamDefinitionsv1alpha1WorkflowWatchEvent**](XStreamDefinitionsv1alpha1WorkflowWatchEvent.md)
+[**StreamResultOfIoArgoprojWorkflowV1alpha1WorkflowWatchEvent**](StreamResultOfIoArgoprojWorkflowV1alpha1WorkflowWatchEvent.md)
 
 ### Authorization
 

@@ -10,8 +10,8 @@ twine = "*"
 wheel = "*"
 
 [packages]
-kubernetes = "~=10.0"
+kubernetes = "~=11.0"
 mock = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"

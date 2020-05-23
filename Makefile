@@ -40,9 +40,9 @@ endif
 
 CLIENT_VERSION    ?= $(shell b="${GIT_BRANCH}"; v="$${b/release-/}.0"; echo "$${v:0:5}")
 
-KUBERNETES_BRANCH ?= release-1.14
+KUBERNETES_BRANCH ?= release-1.15
 
-ARGO_VERSION      ?= master
+ARGO_VERSION      ?= v2.8.0
 ARGO_API_GROUP    ?= argoproj.io
 ARGO_API_VERSION  ?= v1alpha1
 
